@@ -1,0 +1,13 @@
+﻿@model Shop.Models.Product
+
+@{
+    ViewBag.Title = "Index";
+}
+
+
+
+    <h4>@Model.Name</h4>
+    <hr />
+    
+
+@Html.Partial("_Review", Model.Reviews)

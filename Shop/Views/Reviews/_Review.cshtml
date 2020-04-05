@@ -1,0 +1,14 @@
+﻿@model IEnumerable<Shop.Models.Review>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+
+<ul>
+    @foreach (var item in Model)
+    {
+    <li>
+        @Html.DisplayFor(modelItem => item.Comment)
+    </li>   
+    }
+</ul>
