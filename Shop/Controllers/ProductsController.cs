@@ -7,17 +7,29 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Shop.Models;
+using Shop.ViewModels;
 
 namespace Shop.Controllers
 {
-    public class ProductsController : Controller
+    public class ProductsController : BaseController
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        
 
         // GET: Products
-        public ActionResult Index()
+        public ActionResult Index(int? categoryId=null)
         {
-            return View(db.Products.ToList());
+            IEnumerable<Product> products;
+
+            if(categoryId.HasValue)
+            {
+                if(_db.Categories.Any(c=> c.Id == categoryId.Value))
+                { 
+                    products = _db.Products.Where(p => p.CategoryId == categoryId.Value);
+                    return View(products);
+                }
+            }
+            products = _db.Products;
+            return View(products);
         }
 
         // GET: Products/Details/5
@@ -27,7 +39,7 @@ namespace Shop.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Product product = db.Products.Find(id);
+            Product product = _db.Products.Find(id);
             if (product == null)
             {
                 return HttpNotFound();
@@ -38,7 +50,11 @@ namespace Shop.Controllers
         // GET: Products/Create
         public ActionResult Create()
         {
-            return View();
+            var model = new CreateProductViewModel();
+
+            model.Categories = _db.Categories.Select(c => new SelectListItem { Text = c.Name, Value = c.Id.ToString() });
+
+            return View(model);
         }
 
         // POST: Products/Create
@@ -46,12 +62,12 @@ namespace Shop.Controllers
         // Aby uzyskać więcej szczegółów, zobacz https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Name,Descroption,Price")] Product product)
+        public ActionResult Create([Bind(Include = "Id,Name,Descroption,Price,CategoryId")] Product product)
         {
             if (ModelState.IsValid)
             {
-                db.Products.Add(product);
-                db.SaveChanges();
+                _db.Products.Add(product);
+                _db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
@@ -65,7 +81,7 @@ namespace Shop.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Product product = db.Products.Find(id);
+            Product product = _db.Products.Find(id);
             if (product == null)
             {
                 return HttpNotFound();
@@ -82,8 +98,8 @@ namespace Shop.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(product).State = EntityState.Modified;
-                db.SaveChanges();
+                _db.Entry(product).State = EntityState.Modified;
+                _db.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(product);
@@ -96,7 +112,7 @@ namespace Shop.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Product product = db.Products.Find(id);
+            Product product = _db.Products.Find(id);
             if (product == null)
             {
                 return HttpNotFound();
@@ -109,19 +125,12 @@ namespace Shop.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Product product = db.Products.Find(id);
-            db.Products.Remove(product);
-            db.SaveChanges();
+            Product product = _db.Products.Find(id);
+            _db.Products.Remove(product);
+            _db.SaveChanges();
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+        
     }
 }

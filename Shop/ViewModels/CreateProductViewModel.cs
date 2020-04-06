@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
-namespace Shop.Models
+namespace Shop.ViewModels
 {
-    public class Product : IEntity
+    public class CreateProductViewModel
     {
-        
         public string Name { get; set; }
         public string Descroption { get; set; }
         public decimal Price { get; set; }
         public int CategoryId { get; set; }
-        public virtual ICollection<Review> Reviews { get; set; }
+
+        public IEnumerable<SelectListItem> Categories { get; set; }
     }
 }
