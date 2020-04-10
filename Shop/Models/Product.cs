@@ -12,6 +12,8 @@ namespace Shop.Models
         public string Descroption { get; set; }
         public decimal Price { get; set; }
         public int CategoryId { get; set; }
+
+        public virtual ICollection<ApplicationUser> ApplicationUsers { get; set; }
         public virtual ICollection<Review> Reviews { get; set; }
     }
 }

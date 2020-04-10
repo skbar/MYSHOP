@@ -22,5 +22,6 @@ namespace Shop.Models
         {
             return new ApplicationDbContext();
         }
+
     }
 }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Microsoft.AspNet.Identity;
 using Shop.Models;
 using Shop.ViewModels;
 
@@ -138,6 +139,31 @@ namespace Shop.Controllers
             return RedirectToAction("Index");
         }
 
-        
+        [Authorize]
+        public ActionResult Buy(int? id)
+        {
+            if(id == null)
+                return RedirectToAction("Index");
+            
+
+            var product = _db.Products.Find(id);
+            if(product != null)
+            {
+                var userId = User.Identity.GetUserId();
+                var user = _db.Users.Find(userId);
+
+                if(user.Balance >= product.Price)
+                {
+                    user.Balance -= product.Price;
+                    user.Products.Add(product);
+
+                    _db.Entry(user).State = EntityState.Modified;
+                    _db.SaveChanges();
+
+                    return RedirectToAction("Balance", "Shop");
+                }
+            }
+            return RedirectToAction("Index");
+        }
     }
 }
