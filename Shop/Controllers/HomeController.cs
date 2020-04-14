@@ -9,15 +9,9 @@ namespace Shop.Controllers
 {
     public class HomeController : BaseController
     {
-        public ActionResult Index(string search = null)
+        public ActionResult Index()
         {
-            IEnumerable<Category> model;
-            if (!string.IsNullOrEmpty(search))
-                model = _db.Categories.Where(c => c.Name.Contains(search)).ToList();
-            else
-                model = _db.Categories.ToList();
-
-            return View(model);
+            return View();
         }
 
         public ActionResult About()
